@@ -1,70 +1,57 @@
 import { db } from "../db.js";
 
-export const getUsers = (db) => async (_, res) => {
-    try {
-        const q = "SELECT * FROM railway";
-        const data = await queryAsync(db, q);
+export const getUsers = (_, res) => {
+    const q = "SELECT * FROM railway";
+
+    db.query(q, (err, data) => {
+        if (err) return res.json(err);
+
         return res.status(200).json(data);
-    } catch (error) {
-        console.error("Error fetching users:", error);
-        return res.status(500).json({ error: "Internal Server Error" });
-    }
+    });
 };
 
-export const addUser = async (req, res) => {
-    try {
-        const q =
-            "INSERT INTO railway(`nome`, `email`,`fone`,`datanasc`) VALUES(?, ?, ?, ?)";
-        const values = [
-            req.body.nome,
-            req.body.email,
-            req.body.fone,
-            req.body.datanasc,
-        ];
+export const addUser = (req, res) => {
+    const q =
+        "INSERT INTO railway(`nome`, `email`, `fone`, `datanasc`) VALUES(?)";
 
-        await queryAsync(q, values);
-        return res.status(200).json("Usuario criado com sucesso");
-    } catch (error) {
-        console.error("Error adding user:", error);
-        return res.status(500).json({ error: "Internal Server Error" });
-    }
+    const values = [
+        req.body.nome,
+        req.body.email,
+        req.body.fone,
+        req.body.data_nascimento,
+    ];
+
+    db.query(q, [values], (err) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json("Usuário criado com sucesso.");
+    });
 };
 
-export const updateUser = async (req, res) => {
-    try {
-        const q =
-            "UPDATE railway SET `nome` = ?, `email` = ?, `fone` = ?, `datanasc` = ? WHERE `id` = ?";
-        const values = [
-            req.body.nome,
-            req.body.email,
-            req.body.fone,
-            req.body.datanasc,
-        ];
+export const updateUser = (req, res) => {
+    const q =
+        "UPDATE railway SET `nome` = ?, `email` = ?, `fone` = ?, `datanasc` = ? WHERE `id` = ?";
 
-        await queryAsync(q, [...values, req.params.id]);
-        return res.status(200).json("Usuario atualizado com sucesso");
-    } catch (error) {
-        console.error("Error updating user:", error);
-        return res.status(500).json({ error: "Internal Server Error" });
-    }
+    const values = [
+        req.body.nome,
+        req.body.email,
+        req.body.fone,
+        req.body.data_nascimento,
+    ];
+
+    db.query(q, [...values, req.params.id], (err) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json("Usuário atualizado com sucesso.");
+    });
 };
 
-export const deleteUser = async (req, res) => {
-    try {
-        const q = "DELETE FROM railway WHERE `id` = ?";
-        await queryAsync(q, [req.params.id]);
-        return res.status(200).json("Usuario deletado com sucesso");
-    } catch (error) {
-        console.error("Error deleting user:", error);
-        return res.status(500).json({ error: "Internal Server Error" });
-    }
-};
+export const deleteUser = (req, res) => {
+    const q = "DELETE FROM railway WHERE `id` = ?";
 
-const queryAsync = (q, values = []) => {
-    return new Promise((resolve, reject) => {
-        db.query(q, values, (err, data) => {
-            if (err) reject(err);
-            resolve(data);
-        });
+    db.query(q, [req.params.id], (err) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json("Usuário deletado com sucesso.");
     });
 };
