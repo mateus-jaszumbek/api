@@ -18,7 +18,7 @@ export const addUser = (req, res) => {
         req.body.nome,
         req.body.email,
         req.body.fone,
-        req.body.data_nascimento,
+        req.body.datanasc,
     ];
 
     db.query(q, [values], (err) => {
@@ -36,7 +36,7 @@ export const updateUser = (req, res) => {
         req.body.nome,
         req.body.email,
         req.body.fone,
-        req.body.data_nascimento,
+        req.body.datanasc,
     ];
 
     db.query(q, [...values, req.params.id], (err) => {
